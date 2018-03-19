@@ -1,0 +1,20 @@
+{
+  "name": "redux-ts-helper",
+  "version": "0.1.0",
+  "description": "",
+  "scripts": {
+    "dev": "tsc -w",
+    "build": "tsc"
+  },
+  "pre-commit": [],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "author": "DT",
+  "license": "MIT",
+  "files": ["*.md", "lib", "index.ts"],
+  "dependencies": {
+    "@types/redux": "^3.6.0",
+    "typescript": "^2.6.2"
+  }
+}

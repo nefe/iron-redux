@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitAny": false,
+    "target": "es6",
+    "experimentalDecorators": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "jsx": "react",
+    "sourceMap": false,
+    "outDir": "lib",
+    "baseUrl": ".",
+    "moduleResolution": "node",
+    "noEmitOnError": true,
+    "emitDecoratorMetadata": true
+  },
+  "awesomeTypescriptLoaderOptions": {
+    "useWebpackText": true,
+    "forkChecker": true,
+    "useCache": true
+  },
+  "include": ["./index.ts"],
+  "exclude": ["node_modules", "examples"]
+}
