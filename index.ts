@@ -118,7 +118,9 @@ export function createFetchAction<Key>(
       method
     };
 
-    return action as typeof action & { type: Key; payload: Response };
+    return action as typeof action & { type: Key; payload: Response } & Partial<
+        Promise<Response>
+      >;
   };
 }
 
