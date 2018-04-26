@@ -129,6 +129,16 @@ type ActionMap<T> = {
 };
 type ValueOf<T> = T[keyof T];
 
+/** 根据 Reducer Map 返回 全局 State */
+export type ReturnState<ReducerMap> = {
+  [key in keyof ReducerMap]: ReducerMap[key] extends (
+    state: any,
+    action: any
+  ) => infer R
+    ? R
+    : any
+};
+
 /**
  *
  * 获取 actions 类型
