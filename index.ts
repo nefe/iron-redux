@@ -85,6 +85,43 @@ export function createAction<T>(type: T) {
   };
 }
 
+interface IFetchTypes<key> {
+  error: "error";
+  success: key;
+  loading: "loading";
+}
+
+export enum Method {
+  Get = "GET",
+  Post = "POST",
+  Put = "PUT",
+  Delete = "DELETE"
+}
+
+/**
+ * 创建 fetch action
+ */
+export function createFetchAction<Key>(
+  types: IFetchTypes<Key>,
+  url: string,
+  method = Method.Get,
+  meta?
+) {
+  return <Params, Response, R = Params>(
+    fn: (params?: Params, ...args: any[]) => Params = identify
+  ) => (params?: Params, ...args: any[]) => {
+    const action = {
+      types,
+      meta,
+      params: fn(params, ...args),
+      url,
+      method
+    };
+
+    return action as typeof action & { type: Key; payload: Response };
+  };
+}
+
 type ActionMap<T> = {
   [key in keyof T]?: ((payload?: any, arg2?, arg3?, arg4?) => T[key])
 };
