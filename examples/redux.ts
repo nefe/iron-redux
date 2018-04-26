@@ -11,13 +11,15 @@ import {
   AsyncTuple,
   NO_ERROR_TYPES,
   ThunkAction
-} from "redux-ts-helper";
+} from "../index";
 
 /**
  * 定义 types
  */
 const prefix = "prefix/";
-enum BasicTypes {}
+enum BasicTypes {
+  add
+}
 enum FetchTypes {}
 const Types = composeTypes({
   prefix,
@@ -28,7 +30,22 @@ const Types = composeTypes({
 /**
  * actions 和 InitialState
  */
-const actions = {};
+const actions = {
+  add: createAction(Types.add)<number>(),
+  t(): ThunkAction {
+    return d => {};
+  }
+};
+
+type ActionTypes<T> = {
+  [key in keyof T]: T[key] extends (
+    ...args: any[]
+  ) => { type: infer T2; payload: infer T3 }
+    ? { type: T2; payload: T3 }
+    : never
+}[keyof T];
+
+type as = ActionTypes<typeof actions>;
 
 const ActionDefinition = getActionDefinition(actions);
 
