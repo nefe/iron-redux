@@ -1,6 +1,6 @@
 {
   "name": "redux-ts-helper",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "redux typescript",
   "scripts": {
     "dev": "tsc -w",
@@ -12,7 +12,11 @@
   },
   "author": "DT",
   "license": "MIT",
-  "files": ["*.md", "lib", "index.ts"],
+  "files": [
+    "*.md",
+    "lib",
+    "index.ts"
+  ],
   "dependencies": {
     "@types/redux": "^3.6.0",
     "typescript": "2.8.1"
