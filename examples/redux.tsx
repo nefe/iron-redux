@@ -43,14 +43,14 @@ class Params {
  * actions 和 InitialState
  */
 const actions = {
-  add: createAction(Types.add)<number>(),
+  _add: createAction(Types.add)<number>(),
   fetchData: createFetchAction(Types.fetchData, "/fetchData.json")<
     Params,
     Response
-  >(),
-  thunkify(): ThunkAction {
+  >("data"),
+  add(): ThunkAction {
     return dispatch => {
-      dispatch(actions.add(3));
+      dispatch(actions._add(3));
     };
   }
 };
@@ -58,7 +58,7 @@ const actions = {
 const ActionDefinition = getActionDefinition(actions);
 
 class InitialState {
-  res: Response;
+  data = new AsyncTuple(Response);
 }
 
 /**
@@ -69,16 +69,8 @@ function reducer(
   action: typeof ActionDefinition
 ): InitialState {
   switch (action.type) {
-    case Types.fetchData.success: {
-      const { payload } = action;
-
-      return {
-        ...state,
-        res: payload
-      };
-    }
     default: {
-      return state;
+      return AsyncTuple.handleAll(state, action);
     }
   }
 }

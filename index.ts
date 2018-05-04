@@ -6,6 +6,10 @@ type B<T> = { [key in keyof T]: key };
 
 export const NO_ERROR_TYPES = -1;
 
+const LOADING_SUFFIX = "_LOADING";
+const SUCCESS_SUFFIX = "_SUCCESS";
+const ERROR_SUFFIX = "_ERROR";
+
 /** 创建 Types */
 export function composeTypes<T1, T2>(config: {
   prefix: string;
@@ -17,9 +21,6 @@ export function composeTypes<T1, T2>(config: {
     BasicTypes: actionTypes = {},
     FetchTypes: fetchActionTypes = {}
   } = config;
-  const loading = "_LOADING";
-  const success = "_SUCCESS";
-  const error = "_ERROR";
 
   const types = { ...(actionTypes as any), ...(fetchActionTypes as any) };
 
@@ -30,8 +31,8 @@ export function composeTypes<T1, T2>(config: {
 
         if (fetchActionTypes[property] === NO_ERROR_TYPES) {
           result = [
-            prefix + property + loading,
-            prefix + property + success,
+            prefix + property + LOADING_SUFFIX,
+            prefix + property + SUCCESS_SUFFIX,
             null
           ];
           result.loading = result[0];
@@ -40,9 +41,9 @@ export function composeTypes<T1, T2>(config: {
         }
 
         result = [
-          prefix + property + loading,
-          prefix + property + success,
-          prefix + property + error
+          prefix + property + LOADING_SUFFIX,
+          prefix + property + SUCCESS_SUFFIX,
+          prefix + property + ERROR_SUFFIX
         ];
 
         result.loading = result[0];
@@ -104,16 +105,14 @@ export enum Method {
 export function createFetchAction<Key>(
   types: IFetchTypes<Key>,
   url: string,
-  method = Method.Get,
-  meta?
+  method = Method.Get
 ) {
-  return <Params, Response, R = Params>(
-    fn: (params?: Params, ...args: any[]) => Params = identify
-  ) => (params?: Params, ...args: any[]) => {
+  return <Params, Response>(stateKey?: string) => (params?: Params, meta?) => {
     const action = {
+      stateKey,
       types,
       meta,
-      params: fn(params, ...args),
+      params,
       url,
       method
     };
@@ -260,6 +259,42 @@ export class AsyncTuple<T> {
         ...extraProps
       }
     };
+  }
+
+  static defaultProcess<K extends keyof T, T extends Object>(
+    stateKey: K,
+    state: T,
+    action,
+    fetchType: "loading" | "success" | "error"
+  ): T {
+    if (fetchType === "loading") {
+      return AsyncTuple.handleLoading(stateKey, state);
+    } else if (fetchType === "success") {
+      return AsyncTuple.handleSuccess(stateKey, state, action);
+    } else if (fetchType === "error") {
+      return AsyncTuple.handleError(stateKey, state, action);
+    }
+
+    return state;
+  }
+
+  static handleAll(state, action, process = AsyncTuple.defaultProcess) {
+    if (action.url && action.type && action.stateKey) {
+      const actionType = action.type as string;
+      let fetchType = "" as "loading" | "success" | "error";
+
+      if (actionType.endsWith(LOADING_SUFFIX)) {
+        fetchType = "loading";
+      } else if (actionType.endsWith(SUCCESS_SUFFIX)) {
+        fetchType = "success";
+      } else if (actionType.endsWith(ERROR_SUFFIX)) {
+        fetchType = "error";
+      }
+
+      return process(action.stateKey, state, action, fetchType);
+    }
+
+    return state;
   }
 }
 
