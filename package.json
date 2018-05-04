@@ -1,6 +1,6 @@
 {
   "name": "redux-ts-helper",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "redux typescript",
   "scripts": {
     "dev": "tsc -w",
