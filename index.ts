@@ -123,11 +123,6 @@ export function createFetchAction<Key>(
   };
 }
 
-type ActionMap<T> = {
-  [key in keyof T]?: ((payload?: any, arg2?, arg3?, arg4?) => T[key])
-};
-type ValueOf<T> = T[keyof T];
-
 /** 根据 Reducer Map 返回 全局 State */
 export type ReturnState<ReducerMap> = {
   [key in keyof ReducerMap]: ReducerMap[key] extends (
@@ -138,23 +133,27 @@ export type ReturnState<ReducerMap> = {
     : any
 };
 
+type ValueOf<T> = T[keyof T];
+
 /**
  *
- * 获取 actions 类型
+ * 获取 action 类型
  */
-export function getActionDefinition<Actions>(actions: ActionMap<Actions>) {
-  type ActionEnums =
-    | ValueOf<Actions>
-    | {
-        type: "error";
-        payload?: { message: string; [key: string]: any };
-        params?: any;
-        meta?: any;
+export type ActionType<Actions> =
+  | ValueOf<
+      {
+        [key in keyof Actions]: Actions[key] extends (...args: any[]) => infer R
+          ? R
+          : never
       }
-    | { type: "loading"; payload?: any; params?: any; meta?: any };
-
-  return {} as ActionEnums;
-}
+    >
+  | {
+      type: "error";
+      payload?: { message: string; [key: string]: any };
+      params?: any;
+      meta?: any;
+    }
+  | { type: "loading"; payload?: any; params?: any; meta?: any };
 
 /**
  *

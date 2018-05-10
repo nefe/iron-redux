@@ -1,7 +1,7 @@
 {
-  "name": "redux-ts-helper",
-  "version": "0.1.4",
-  "description": "redux typescript",
+  "name": "iron-redux",
+  "version": "0.1.0",
+  "description": "redux typescript perfect safe",
   "scripts": {
     "dev": "tsc -w",
     "build": "tsc"
@@ -12,12 +12,8 @@
   },
   "author": "DT",
   "license": "MIT",
-  "files": [
-    "*.md",
-    "lib",
-    "index.ts"
-  ],
-  "dependencies": {
+  "files": ["*.md", "lib", "index.ts"],
+  "devDependencies": {
     "@types/redux": "^3.6.0",
     "typescript": "2.8.1"
   }

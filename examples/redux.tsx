@@ -6,12 +6,12 @@
 import {
   composeTypes,
   createAction,
-  getActionDefinition,
   ActionCreator,
   AsyncTuple,
   NO_ERROR_TYPES,
   createFetchAction,
-  ThunkAction
+  ThunkAction,
+  ActionType
 } from "../index";
 
 /**
@@ -19,7 +19,8 @@ import {
  */
 const prefix = "prefix/";
 enum BasicTypes {
-  add
+  add,
+  remove
 }
 enum FetchTypes {
   fetchData
@@ -44,6 +45,9 @@ class Params {
  */
 const actions = {
   _add: createAction(Types.add)<number>(),
+  _add2: createAction(Types.add)((s1: string, s2: number) => {
+    return { s1, s2 };
+  }),
   fetchData: createFetchAction(Types.fetchData, "/fetchData.json")<
     Params,
     Response
@@ -55,8 +59,6 @@ const actions = {
   }
 };
 
-const ActionDefinition = getActionDefinition(actions);
-
 class InitialState {
   data = new AsyncTuple(Response);
 }
@@ -66,7 +68,7 @@ class InitialState {
  */
 function reducer(
   state = new InitialState(),
-  action: typeof ActionDefinition
+  action: ActionType<typeof actions>
 ): InitialState {
   switch (action.type) {
     default: {
