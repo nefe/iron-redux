@@ -277,8 +277,18 @@ export class AsyncTuple<T> {
     return state;
   }
 
-  static handleAll(state, action, process = AsyncTuple.defaultProcess) {
-    if (action.url && action.type && action.stateKey) {
+  static handleAll<State>(
+    prefix: string,
+    state: State,
+    action,
+    process = AsyncTuple.defaultProcess
+  ) {
+    if (
+      action.url &&
+      action.type &&
+      action.stateKey &&
+      action.type.includes(prefix)
+    ) {
       const actionType = action.type as string;
       let fetchType = "" as "loading" | "success" | "error";
 
