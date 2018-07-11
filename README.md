@@ -2,12 +2,10 @@
 
 iron-redux 是一个规范 redux + Typescript 类型推导流程的库。iron-redux 提供的特性如下：
 
-```
-* redux 整体流程类型完美！但不需要做额外的类型定义
-* 让 redux 代码非常精简！
-* 让 reducer 每个case都能获取不同的 action 类型；获取 redux 全局 state 类型等。
-* vscode IDE 插件支持。
-```
+- redux 整体流程类型完美！但不需要做额外的类型定义
+- 让 redux 代码非常精简！
+- 让 reducer 每个 case 都能获取不同的 action 类型；获取 redux 全局 state 类型等。
+- vscode IDE 插件支持。
 
 # 代码规范
 
