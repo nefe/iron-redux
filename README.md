@@ -1,12 +1,13 @@
-# redux-ts-helper
+# iron-redux
 
-# 工具
+iron-redux 是一个规范 redux + Typescript 类型推导流程的库。iron-redux 提供的特性如下：
 
-vscode IDE 可以安装 nelfe-toolkits。
-
-* 1、支持 redux 文件的 snippets
-* 2、可以按 cmd + ctrl + a，然后根据提示创建 action。
-* 3、持续添加中...
+```
+* redux 整体流程类型完美！但不需要做额外的类型定义
+* 让 redux 代码非常精简！
+* 让 reducer 每个case都能获取不同的 action 类型；获取 redux 全局 state 类型等。
+* vscode IDE 插件支持。
+```
 
 # 代码规范
 
@@ -114,9 +115,9 @@ this.props.updateFunc.then(data => {});
 
 ## 3、InitialState
 
-* 1、复杂的属性可以尽量写些注释，方便调用的时候可以辨识。
-* 2、接口返回类型如果要处理 loading、error。请使用 AsyncTuple。使用 API 中的 init 一方面提供了类型，一方面提供了接口的初始值，该初始值可以防止复杂对象后端返回 undefined
-* 3、InitialState 里不要有各种 loading、error 字段，代码阅读者无法区分这是哪个请求的 loading 或者 error。建议都使用 AsyncTuple 来做。
+- 1、复杂的属性可以尽量写些注释，方便调用的时候可以辨识。
+- 2、接口返回类型如果要处理 loading、error。请使用 AsyncTuple。使用 API 中的 init 一方面提供了类型，一方面提供了接口的初始值，该初始值可以防止复杂对象后端返回 undefined
+- 3、InitialState 里不要有各种 loading、error 字段，代码阅读者无法区分这是哪个请求的 loading 或者 error。建议都使用 AsyncTuple 来做。
 
 ```typescript
 class InitialState {
@@ -126,7 +127,41 @@ class InitialState {
 }
 ```
 
-## 4、reducer
+## 4、AsyncTuple
+
+存储某个数据及其 loading error 状态的类。包含静态方法 `handleLoading`, `handleError`, `handleSuccess`。
+
+```
+class InitialState {
+  data = new AsyncTuple(someResponse);
+}
+```
+
+使用静态方法
+
+```
+case Types.loadData.loading: {
+  return AsyncTuple.handleLoading("data", state);
+}
+case Types.loadData.success: {
+  return AsyncTuple.handleSuccess("data", state, action);
+}
+case Types.loadData.error: {
+  return AsyncTuple.handleError("data", state, action);
+}
+```
+
+使用数据：
+
+```
+const state: InitialState;
+
+state.data.loading
+stata.data.data
+state.data.error
+```
+
+## 5、reducer
 
 reducer 没有什么好说的。根据自己的需求写就好了。AsyncTuple 的 case 可以使用如下方法调用。
 
@@ -142,8 +177,102 @@ reducer 没有什么好说的。根据自己的需求写就好了。AsyncTuple �
     }
 ```
 
-## 衍生数据和原生数据
+## 6、handleAll
 
-碰到接口返回结果不能直接在 View 中使用，需要加工的情况下，在 mapStateToProps 中加工，不要在 Reducer 中加工。
+为了避免在 reducer 的各种 case 中处理冗余而啰嗦的 AsyncTuple 逻辑（包括 handleError、handleLoading、handleSuccess）。可以在 default 中使用 handleAll 方法。
 
-优势：InitialState 数据只保留原生数据，不会有衍生数据的冗余，Reducer 中也可以保持简单，不会因为衍生数据的存在而导致一份数据在多个 Reducer 中都需要加工的 case。
+```
+const actions = {
+  // 注意在action处要指定字段名： listData
+  fetch: ApI.xx.xx.createFetchAction(Types.fetch, 'listData'),
+};
+
+class InitialState {
+  // 注意该对应字段默认应该是 AsyncTuple。
+  listData = new AsyncTuple();
+}
+
+/**
+ * reducer
+ */
+function reducer(
+  state = new InitialState(),
+  action: ActionType<typeof actions>
+): InitialState {
+  switch (action.type) {
+    // 这里可以避免写各种 AsyncTuple。
+    default: {
+      return AsyncTuple.handleAll(prefix, state, action);
+    }
+  }
+}
+```
+
+其中 AsyncTuple.handleAll 是可以由用户来自定义的：
+
+```
+// 自定义处理函数
+function process<K extends keyof T, T extends Object>(
+    stateKey: K,
+    state: T,
+    action,
+    fetchType: "loading" | "success" | "error"
+  ): T {
+    if (fetchType === "loading") {
+      return AsyncTuple.handleLoading(stateKey, state);
+    } else if (fetchType === "success") {
+      return AsyncTuple.handleSuccess(stateKey, state, action);
+    } else if (fetchType === "error") {
+      return AsyncTuple.handleError(stateKey, state, action);
+    }
+
+    return state;
+}
+
+/**
+ * reducer
+ */
+function reducer(
+  state = new InitialState(),
+  action: ActionType<typeof actions>
+): InitialState {
+  switch (action.type) {
+    // 这里可以避免写各种 AsyncTuple。
+    default: {
+        AsyncTuple.handleAll(prefix, state, action, process)
+    }
+  }
+}
+```
+
+## 衍生数据
+
+如果，mapStateToProps 进行数据加工，则会产生一些衍生数据。衍生数据类型可以用如下方法产生：
+
+```
+function mapStateToProps(state: GlobalState, props: Props) {
+  return ...;
+}
+
+type ReactProps = ReturnType<typeof mapStateToProps> & Props & typeof actions;
+```
+
+## 获取 Redux 全局 State 类型
+
+```
+const rootReducers = {
+  a: AReducer,
+  b: BReducer,
+};
+const rootReducer = combineReducer(rootReducers);
+
+export type RootState = ReturnState<typeof rootReducers>;
+```
+
+# 工具
+
+vscode IDE 可以安装 nelfe-toolkits。
+
+- 1、支持 redux 文件的 snippets
+- 2、可以按 cmd + ctrl + a，然后根据提示创建 action。
+- 3、持续添加中...
