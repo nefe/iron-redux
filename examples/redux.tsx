@@ -72,7 +72,7 @@ function reducer(
 ): InitialState {
   switch (action.type) {
     default: {
-      return AsyncTuple.handleAll(state, action);
+      return AsyncTuple.handleAll(prefix, state, action);
     }
   }
 }
