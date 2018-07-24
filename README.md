@@ -274,3 +274,38 @@ vscode IDE 可以安装 nelfe-toolkits。
 - 1、支持 redux 文件的 snippets
 - 2、可以按 cmd + ctrl + a，然后根据提示创建 action。
 - 3、持续添加中...
+
+# 建议
+
+除了用 handleAll 来避免异步 action 的冗余代码，简单的 action 也可以用如下方式避免冗余代码：
+
+```typescript
+const actions = {
+  // 同时传入 key 和 value。
+  setConfig<Key extends keyof Config>(key: Key, value: Config[Key]) {
+    return {
+      type: Types.setConfig,
+      payload: {
+        key,
+        value
+      }
+    };
+  },
+};
+
+reducer:
+    case Types.setConfig: {
+      const { payload } = action;
+
+      return {
+        ...state,
+        config: {
+          ...state.config,
+          [payload.key]: payload.value
+        }
+      };
+    }
+
+```
+
+
