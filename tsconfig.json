@@ -2,7 +2,7 @@
   "compilerOptions": {
     "module": "commonjs",
     "noImplicitAny": false,
-    "target": "es6",
+    "target": "es5",
     "experimentalDecorators": true,
     "removeComments": true,
     "preserveConstEnums": true,

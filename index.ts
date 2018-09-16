@@ -1,14 +1,16 @@
 /** fetch 中间件的 types */
 type F<T> = {
-  [key in keyof T]: { success: key; error: "error"; loading: "loading" }
+  [key in keyof T]: { success: key; error: 'error'; loading: 'loading' }
 };
 type B<T> = { [key in keyof T]: key };
 
 export const NO_ERROR_TYPES = -1;
 
-const LOADING_SUFFIX = "_LOADING";
-const SUCCESS_SUFFIX = "_SUCCESS";
-const ERROR_SUFFIX = "_ERROR";
+const LOADING_SUFFIX = '_LOADING';
+const SUCCESS_SUFFIX = '_SUCCESS';
+const ERROR_SUFFIX = '_ERROR';
+
+declare let Proxy: any;
 
 /** 创建 Types */
 export function composeTypes<T1, T2>(config: {
@@ -87,16 +89,16 @@ export function createAction<T>(type: T) {
 }
 
 interface IFetchTypes<key> {
-  error: "error";
+  error: 'error';
   success: key;
-  loading: "loading";
+  loading: 'loading';
 }
 
 export enum Method {
-  Get = "GET",
-  Post = "POST",
-  Put = "PUT",
-  Delete = "DELETE"
+  Get = 'GET',
+  Post = 'POST',
+  Put = 'PUT',
+  Delete = 'DELETE'
 }
 
 /**
@@ -148,12 +150,12 @@ export type ActionType<Actions> =
       }
     >
   | {
-      type: "error";
+      type: 'error';
       payload?: { message: string; [key: string]: any };
       params?: any;
       meta?: any;
     }
-  | { type: "loading"; payload?: any; params?: any; meta?: any };
+  | { type: 'loading'; payload?: any; params?: any; meta?: any };
 
 /**
  *
@@ -168,7 +170,7 @@ export type Dispatch = <Payload>(
 ) => Promise<Payload>;
 
 export type ThunkAction<Payload = never> = {
-  type?: "@thunkAction";
+  type?: '@thunkAction';
   payload?: never;
   (dispatch: Dispatch, getState?: any): any;
 } & Partial<Promise<Payload>>;
@@ -179,22 +181,22 @@ export class AsyncTuple<T> {
   /** 是否加载出错 */
   error = false;
   /** 出错的 message */
-  message? = "";
+  message? = '';
   /** 具体的 data */
   data?: T;
 
   [x: string]: any;
 
   constructor(initLoading?: boolean | T, initData?: T) {
-    if (typeof initLoading === "boolean") {
+    if (typeof initLoading === 'boolean') {
       this.loading = initLoading;
     }
 
-    if (typeof initLoading === "object") {
+    if (typeof initLoading === 'object') {
       this.data = initLoading;
     }
 
-    if (typeof initData === "object") {
+    if (typeof initData === 'object') {
       this.data = initData;
     }
   }
@@ -264,13 +266,13 @@ export class AsyncTuple<T> {
     stateKey: K,
     state: T,
     action,
-    fetchType: "loading" | "success" | "error"
+    fetchType: 'loading' | 'success' | 'error'
   ): T {
-    if (fetchType === "loading") {
+    if (fetchType === 'loading') {
       return AsyncTuple.handleLoading(stateKey, state);
-    } else if (fetchType === "success") {
+    } else if (fetchType === 'success') {
       return AsyncTuple.handleSuccess(stateKey, state, action);
-    } else if (fetchType === "error") {
+    } else if (fetchType === 'error') {
       return AsyncTuple.handleError(stateKey, state, action);
     }
 
@@ -289,15 +291,15 @@ export class AsyncTuple<T> {
       action.stateKey &&
       action.type.includes(prefix)
     ) {
-      const actionType = action.type as string;
-      let fetchType = "" as "loading" | "success" | "error";
+      const actionType = action.type as any;
+      let fetchType = '' as 'loading' | 'success' | 'error';
 
       if (actionType.endsWith(LOADING_SUFFIX)) {
-        fetchType = "loading";
+        fetchType = 'loading';
       } else if (actionType.endsWith(SUCCESS_SUFFIX)) {
-        fetchType = "success";
+        fetchType = 'success';
       } else if (actionType.endsWith(ERROR_SUFFIX)) {
-        fetchType = "error";
+        fetchType = 'error';
       }
 
       return process(action.stateKey, state, action, fetchType);
