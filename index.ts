@@ -25,39 +25,45 @@ export function composeTypes<T1, T2>(config: {
   } = config;
 
   const types = { ...(actionTypes as any), ...(fetchActionTypes as any) };
+  const target = types;
 
-  return new Proxy(types, {
-    get(target, property: string) {
-      if (fetchActionTypes.hasOwnProperty(property)) {
-        let result = [] as any;
+  const res = {} as any;
 
-        if (fetchActionTypes[property] === NO_ERROR_TYPES) {
-          result = [
-            prefix + property + LOADING_SUFFIX,
-            prefix + property + SUCCESS_SUFFIX,
-            null
-          ];
-          result.loading = result[0];
-          result.success = result[1];
-          return result;
-        }
+  Object.keys(types).forEach(property => {
+    if (fetchActionTypes.hasOwnProperty(property)) {
+      let result = [] as any;
 
+      if (fetchActionTypes[property] === NO_ERROR_TYPES) {
         result = [
           prefix + property + LOADING_SUFFIX,
           prefix + property + SUCCESS_SUFFIX,
-          prefix + property + ERROR_SUFFIX
+          null
         ];
-
         result.loading = result[0];
         result.success = result[1];
-        result.error = result[2];
 
-        return result;
+        res[property] = result;
+        return;
       }
 
-      return prefix + property;
+      result = [
+        prefix + property + LOADING_SUFFIX,
+        prefix + property + SUCCESS_SUFFIX,
+        prefix + property + ERROR_SUFFIX
+      ];
+
+      result.loading = result[0];
+      result.success = result[1];
+      result.error = result[2];
+
+      res[property] = result;
+      return;
     }
+
+    res[property] = prefix + property;
   });
+
+  return res;
 }
 
 interface Action<key, T> {
