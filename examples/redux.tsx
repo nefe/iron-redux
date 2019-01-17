@@ -12,15 +12,15 @@ import {
   createFetchAction,
   ThunkAction,
   ActionType
-} from "../index";
+} from '../index';
 
 /**
  * 定义 types
  */
-const prefix = "prefix/";
+const prefix = 'prefix/';
 enum BasicTypes {
-  add,
-  remove
+  addNum,
+  changeKeyword
 }
 enum FetchTypes {
   fetchData
@@ -31,36 +31,17 @@ const Types = composeTypes({
   FetchTypes
 });
 
-class Response {
-  cn: string;
-  en: number;
-}
-
-class Params {
-  index: number;
-}
-
 /**
  * actions 和 InitialState
  */
 const actions = {
-  _add: createAction(Types.add)<number>(),
-  _add2: createAction(Types.add)((s1: string, s2: number) => {
-    return { s1, s2 };
-  }),
-  fetchData: createFetchAction(Types.fetchData, "/fetchData.json")<
-    Params,
-    Response
-  >("data"),
-  add(): ThunkAction {
-    return dispatch => {
-      dispatch(actions._add(3));
-    };
-  }
+  addNum: createAction(Types.addNum)<number>(),
+  changeKeyword: createAction(Types.changeKeyword)<string>()
 };
 
 class InitialState {
-  data = new AsyncTuple(Response);
+  num = 0;
+  keyword = '';
 }
 
 /**
@@ -71,6 +52,22 @@ function reducer(
   action: ActionType<typeof actions>
 ): InitialState {
   switch (action.type) {
+    case Types.addNum: {
+      const num = action.payload;
+
+      return {
+        ...state,
+        num
+      };
+    }
+    case Types.changeKeyword: {
+      const keyword = action.payload;
+
+      return {
+        ...state,
+        keyword
+      };
+    }
     default: {
       return AsyncTuple.handleAll(prefix, state, action);
     }
