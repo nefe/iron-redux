@@ -12,7 +12,7 @@ iron-redux 是一个规范 redux + Typescript 类型推导流程的库。iron-re
 ![](https://img.alicdn.com/tfs/TB1l3QyCrPpK1RjSZFFXXa5PpXa-1536-250.png)
 - 非常轻量级！源码只有 300 行！零依赖！
 
-# 代码规范
+# 使用方法介绍
 
 ## 1、action type
 
