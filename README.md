@@ -1,6 +1,7 @@
-# iron-redux
-
-iron-redux 是一个类型完美的 Redux 去形式化的库。
+<div align="center">
+  <img src="https://img.alicdn.com/tfs/TB1olCdDAzoK1RjSZFlXXai4VXa-275-183.png" height="64">
+  <h2>iron-redux - 一个类型完美的 Redux 去形式化的库。</h2>
+</div>
 
 [![npm version](https://badge.fury.io/js/iron-redux.png)](https://badge.fury.io/js/iron-redux)
 [![npm downloads](https://img.shields.io/npm/dt/iron-redux.svg?style=flat-square)](https://www.npmjs.com/package/iron-redux)
