@@ -7,7 +7,21 @@
 [![npm downloads](https://img.shields.io/npm/dt/iron-redux.svg?style=flat-square)](https://www.npmjs.com/package/iron-redux)
 [![Gitter](https://badges.gitter.im/nefe/iron-redux.svg)](https://gitter.im/nefe/iron-redux?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-iron-redux 提供的特性如下：
+## install
+
+npm:
+
+```sh
+npm i -S iron-redux
+```
+
+yarn:
+
+```sh
+yarn add iron-redux
+```
+
+## iron-redux 特性
 
 - 巧妙利用 Typescript 的类型推导能力，不需要额外定义任何类型，可以使 redux 整体流程类型完美！
 - 让 Redux 代码极其精简！去除任何冗余的、形式化的代码！参看 [example](https://github.com/nefe/iron-redux/blob/master/examples/redux.tsx)。
@@ -19,7 +33,7 @@ iron-redux 提供的特性如下：
 ![](https://img.alicdn.com/tfs/TB1l3QyCrPpK1RjSZFFXXa5PpXa-1536-250.png)
 - 非常轻量级！源码只有 300 行！零依赖！
 
-# 使用方法介绍
+# 使用文档
 
 ## 1、action type
 
