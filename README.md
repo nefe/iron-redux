@@ -1,6 +1,12 @@
 # iron-redux
 
-iron-redux 是一个规范 redux + Typescript 类型推导流程的库。iron-redux 提供的特性如下：
+iron-redux 是一个类型完美的 Redux 去形式化的库。
+
+[![npm version](https://badge.fury.io/js/iron-redux.png)](https://badge.fury.io/js/iron-redux)
+[![npm downloads](https://img.shields.io/npm/dt/iron-redux.svg?style=flat-square)](https://www.npmjs.com/package/iron-redux)
+[![Gitter](https://badges.gitter.im/nefe/iron-redux.svg)](https://gitter.im/nefe/iron-redux?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
+iron-redux 提供的特性如下：
 
 - 巧妙利用 Typescript 的类型推导能力，不需要额外定义任何类型，可以使 redux 整体流程类型完美！
 - 让 Redux 代码极其精简！去除任何冗余的、形式化的代码！参看 [example](https://github.com/nefe/iron-redux/blob/master/examples/redux.tsx)。
