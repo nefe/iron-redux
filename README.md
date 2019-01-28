@@ -26,11 +26,8 @@ yarn add iron-redux
 - 巧妙利用 Typescript 的类型推导能力，不需要额外定义任何类型，可以使 redux 整体流程类型完美。
 - 让 Redux 代码极其精简！去除任何冗余的、形式化的代码！参看 [example](https://github.com/nefe/iron-redux/blob/master/examples/redux.tsx)。
 - 自动推导出整个项目的 Redux 全局状态树的类型。
-- 让 reducer 每个 case 都能获取不同的 action 类型；
-![](https://img.alicdn.com/tfs/TB1dLP8CCzqK1RjSZPcXXbTepXa-732-408.png)
-![](https://img.alicdn.com/tfs/TB1Xi7zCxTpK1RjSZFGXXcHqFXa-726-354.png)
-- vscode IDE 插件支持。
-![](https://img.alicdn.com/tfs/TB1l3QyCrPpK1RjSZFFXXa5PpXa-1536-250.png)
+- 让 reducer 每个 case 都能获取不同的 action 类型，可在 vscode 中参看 [example](https://github.com/nefe/iron-redux/blob/master/examples/redux.tsx)；
+- vscode IDE [插件](https://github.com/nefe/vscode-toolkits)支持。
 - 非常轻量级！源码只有 300 行！零依赖！
 
 # 使用文档
