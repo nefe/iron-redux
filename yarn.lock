@@ -16,6 +16,11 @@ lodash-es@^4.2.1:
   version "4.17.4"
   resolved "http://registry.npm.alibaba-inc.com/lodash-es/download/lodash-es-4.17.4.tgz#dcc1d7552e150a0640073ba9cb31d70f032950e7"
 
+lodash.get@^4.4.2:
+  version "4.4.2"
+  resolved "http://registry.npm.alibaba-inc.com/lodash.get/download/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
+  integrity sha1-LRd/ZS+jHpObRDjVNBSZ36OCXpk=
+
 lodash@^4.2.1:
   version "4.17.4"
   resolved "http://registry.npm.alibaba-inc.com/lodash/download/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"

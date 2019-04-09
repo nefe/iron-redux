@@ -9,6 +9,9 @@
     "jsx": "react",
     "sourceMap": false,
     "outDir": "lib",
+    "lib": [
+      "es2015"
+    ],
     "baseUrl": ".",
     "moduleResolution": "node",
     "noEmitOnError": true,
@@ -19,6 +22,11 @@
     "forkChecker": true,
     "useCache": true
   },
-  "include": ["./index.ts"],
-  "exclude": ["node_modules", "examples"]
+  "include": [
+    "./index.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "examples"
+  ]
 }

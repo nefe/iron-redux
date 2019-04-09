@@ -11,7 +11,8 @@ import {
   NO_ERROR_TYPES,
   createFetchAction,
   ThunkAction,
-  ActionType
+  ActionType,
+  safeGet
 } from '../index';
 
 /**
@@ -35,8 +36,8 @@ const Types = composeTypes({
  * actions 和 InitialState
  */
 const actions = {
-  addNum: createAction(Types.addNum)<number>(),
-  changeKeyword: createAction(Types.changeKeyword)<string>()
+  addNum: createAction(Types.addNum, 'num')<number>(),
+  changeKeyword: createAction(Types.changeKeyword, 'keyword')<string>()
 };
 
 class InitialState {
@@ -52,22 +53,6 @@ function reducer(
   action: ActionType<typeof actions>
 ): InitialState {
   switch (action.type) {
-    case Types.addNum: {
-      const num = action.payload;
-
-      return {
-        ...state,
-        num
-      };
-    }
-    case Types.changeKeyword: {
-      const keyword = action.payload;
-
-      return {
-        ...state,
-        keyword
-      };
-    }
     default: {
       return AsyncTuple.handleAll(prefix, state, action);
     }

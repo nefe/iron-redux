@@ -9,7 +9,7 @@
 
 ## features
 
-- Iron-redux provides helper functions to create type-safe redux types, redux actions and redux state without any extra type difinitions power by the type infer ability of typescript. Try the [example code](https://github.com/nefe/iron-redux/blob/master/examples/redux.tsx) in vscode.
+- iron-redux provides helper functions to create type-safe redux types, redux actions and redux state without any extra type difinitions power by the type infer ability of typescript. Try the [example code](https://github.com/nefe/iron-redux/blob/master/examples/redux.tsx) in vscode.
 - The type of store (The state of your whole application) will be inferred by `ReturnState<your root reducer map>` in iron-redux.
 - Every action type case in reducer can get different corresponding payload type.
 - vscode IDE [extension](https://github.com/nefe/vscode-toolkits) support.
@@ -248,3 +248,26 @@ export type RootState = ReturnState<typeof rootReducers>;
 ```
 
 note: if it's not worked, check your Redux version! The old version Redux code define a totally wrong `combineReducer` type.
+
+
+## safeGet
+
+the same as lodash get but type safe.
+
+```js
+const deepObj = {
+  obj: {
+    arr: [{
+      num: 3
+    }]
+  },
+  obj2: {
+    str: ''
+  }
+}
+
+// get data path is type safe
+const num = safeGet(deepObj, ['obj', 'arr', 0, 'num']);
+const str = safeGet(deepObj, ['obj2', 'str']);
+// return type is type safe
+```
