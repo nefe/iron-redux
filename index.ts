@@ -1,9 +1,7 @@
 import * as get from 'lodash.get';
 
 /** fetch 中间件的 types */
-type F<T> = {
-  [key in keyof T]: { success: key; error: 'error'; loading: 'loading' }
-};
+type F<T> = { [key in keyof T]: { success: key; error: 'error'; loading: 'loading' } };
 type B<T> = { [key in keyof T]: key };
 
 export const NO_ERROR_TYPES = -1;
@@ -15,16 +13,8 @@ const ERROR_SUFFIX = '_ERROR';
 declare let Proxy: any;
 
 /** 创建 Types */
-export function composeTypes<T1, T2>(config: {
-  prefix: string;
-  BasicTypes: T1;
-  FetchTypes: T2;
-}): B<T1> & F<T2> {
-  const {
-    prefix,
-    BasicTypes: actionTypes = {},
-    FetchTypes: fetchActionTypes = {}
-  } = config;
+export function composeTypes<T1, T2>(config: { prefix: string; BasicTypes: T1; FetchTypes: T2 }): B<T1> & F<T2> {
+  const { prefix, BasicTypes: actionTypes = {}, FetchTypes: fetchActionTypes = {} } = config;
 
   const types = { ...(actionTypes as any), ...(fetchActionTypes as any) };
   const target = types;
@@ -36,11 +26,7 @@ export function composeTypes<T1, T2>(config: {
       let result = [] as any;
 
       if (fetchActionTypes[property] === NO_ERROR_TYPES) {
-        result = [
-          prefix + property + LOADING_SUFFIX,
-          prefix + property + SUCCESS_SUFFIX,
-          null
-        ];
+        result = [prefix + property + LOADING_SUFFIX, prefix + property + SUCCESS_SUFFIX, null];
         result.loading = result[0];
         result.success = result[1];
 
@@ -75,9 +61,7 @@ interface Action<key, T> {
   params?: any;
 }
 
-export type ActionCreator<T> = <S>(
-  type: S
-) => (params?: T) => { type: S; payload: T };
+export type ActionCreator<T> = <S>(type: S) => (params?: T) => { type: S; payload: T };
 
 const identify = arg => arg;
 
@@ -85,10 +69,7 @@ const identify = arg => arg;
  * 创建单个 action
  */
 export function createAction<T>(type: T, stateKey = '') {
-  return <P, R = P>(fn: (params?: P, ...args: any[]) => R = identify) => (
-    params?: P,
-    ...args: any[]
-  ) => {
+  return <P, R = P>(fn: (params?: P, ...args: any[]) => R = identify) => (params?: P, ...args: any[]) => {
     return {
       type,
       stateKey,
@@ -113,11 +94,7 @@ export enum Method {
 /**
  * 创建 fetch action
  */
-export function createFetchAction<Key>(
-  types: IFetchTypes<Key>,
-  url: string,
-  method = Method.Get
-) {
+export function createFetchAction<Key>(types: IFetchTypes<Key>, url: string, method = Method.Get) {
   return <Params, Response>(stateKey?: string) => (params?: Params, meta?) => {
     const action = {
       stateKey,
@@ -128,20 +105,13 @@ export function createFetchAction<Key>(
       method
     };
 
-    return action as typeof action & { type: Key; payload: Response } & Partial<
-      Promise<Response>
-    >;
+    return action as typeof action & { type: Key; payload: Response } & Partial<Promise<Response>>;
   };
 }
 
 /** 根据 Reducer Map 返回 全局 State */
 export type ReturnState<ReducerMap> = {
-  [key in keyof ReducerMap]: ReducerMap[key] extends (
-    state: any,
-    action: any
-  ) => infer R
-  ? R
-  : any
+  [key in keyof ReducerMap]: ReducerMap[key] extends (state: any, action: any) => infer R ? R : any
 };
 
 type ValueOf<T> = T[keyof T];
@@ -151,19 +121,13 @@ type ValueOf<T> = T[keyof T];
  * 获取 action 类型
  */
 export type ActionType<Actions> =
-  | ValueOf<
-    {
-      [key in keyof Actions]: Actions[key] extends (...args: any[]) => infer R
-      ? R
-      : never
-    }
-  >
+  | ValueOf<{ [key in keyof Actions]: Actions[key] extends (...args: any[]) => infer R ? R : never }>
   | {
-    type: 'error';
-    payload?: { message: string;[key: string]: any };
-    params?: any;
-    meta?: any;
-  }
+      type: 'error';
+      payload?: { message: string; [key: string]: any };
+      params?: any;
+      meta?: any;
+    }
   | { type: 'loading'; payload?: any; params?: any; meta?: any };
 
 /**
@@ -174,9 +138,7 @@ export function getMergedDefinetion<Result>(map: (state) => Result): Result {
   return;
 }
 
-export type Dispatch = <Payload>(
-  action: { type?: string; payload?: Payload }
-) => Promise<Payload>;
+export type Dispatch = <Payload>(action: { type?: string; payload?: Payload }) => Promise<Payload>;
 
 export type ThunkAction<Payload = never> = {
   type?: '@thunkAction';
@@ -190,7 +152,7 @@ export class AsyncTuple<T> {
   /** 是否加载出错 */
   error = false;
   /** 出错的 message */
-  message?= '';
+  message? = '';
   /** 具体的 data */
   data?: T;
 
@@ -210,11 +172,7 @@ export class AsyncTuple<T> {
     }
   }
 
-  static handleLoading<K extends keyof T, T extends Object>(
-    stateKey: K,
-    state: T,
-    extraProps: Object = {}
-  ): T {
+  static handleLoading<K extends keyof T, T extends Object>(stateKey: K, state: T, extraProps: Object = {}): T {
     const localState = state as any;
     const localKey = stateKey as string;
 
@@ -229,12 +187,7 @@ export class AsyncTuple<T> {
     };
   }
 
-  static handleSuccess<K extends keyof T, T extends Object>(
-    stateKey: K,
-    state: T,
-    action,
-    extraProps: Object = {}
-  ): T {
+  static handleSuccess<K extends keyof T, T extends Object>(stateKey: K, state: T, action, extraProps: Object = {}): T {
     const localState = state as any;
     const localKey = stateKey as string;
 
@@ -250,12 +203,7 @@ export class AsyncTuple<T> {
     };
   }
 
-  static handleError<K extends keyof T, T extends Object>(
-    stateKey: K,
-    state: T,
-    action,
-    extraProps: Object = {}
-  ): T {
+  static handleError<K extends keyof T, T extends Object>(stateKey: K, state: T, action, extraProps: Object = {}): T {
     const localState = state as any;
     const localKey = stateKey as string;
 
@@ -286,25 +234,15 @@ export class AsyncTuple<T> {
     } else if (fetchType === 'normal') {
       return {
         ...(state as any),
-        [stateKey]: action.payload,
+        [stateKey]: action.payload
       };
     }
 
     return state;
   }
 
-  static handleAll<State>(
-    prefix: string,
-    state: State,
-    action,
-    process = AsyncTuple.defaultProcess
-  ) {
-    if (
-      action.url &&
-      action.type &&
-      action.stateKey &&
-      action.type.startsWith(prefix)
-    ) {
+  static handleAll<State>(prefix: string, state: State, action, process = AsyncTuple.defaultProcess) {
+    if (action.url && action.type && action.stateKey && action.type.startsWith(prefix)) {
       const actionType = action.type as any;
       let fetchType = '' as 'loading' | 'success' | 'error';
 
@@ -317,11 +255,7 @@ export class AsyncTuple<T> {
       }
 
       return process(action.stateKey, state, action, fetchType);
-    } else if (
-      action.type &&
-      action.stateKey &&
-      action.type.startsWith(prefix)
-    ) {
+    } else if (action.type && action.stateKey && action.type.startsWith(prefix)) {
       return process(action.stateKey, state, action, 'normal');
     }
 
@@ -329,24 +263,24 @@ export class AsyncTuple<T> {
   }
 }
 
-export function safeGet<T, K1 extends keyof T>(data: T, keys: [K1]): T[K1];
+export function safeGet<T, K1 extends keyof T>(data: T, keys: [K1], defaultValue): T[K1];
 export function safeGet<T, K1 extends keyof T, K2 extends keyof T[K1]>(
   data: T,
-  keys: [K1, K2]
+  keys: [K1, K2],
+  defaultValue
 ): T[K1][K2];
-export function safeGet<
-  T,
-  K1 extends keyof T,
-  K2 extends keyof T[K1],
-  K3 extends keyof T[K1][K2]
->(data: T, keys: [K1, K2, K3]): T[K1][K2][K3];
+export function safeGet<T, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2]>(
+  data: T,
+  keys: [K1, K2, K3],
+  defaultValue
+): T[K1][K2][K3];
 export function safeGet<
   T,
   K1 extends keyof T,
   K2 extends keyof T[K1],
   K3 extends keyof T[K1][K2],
   K4 extends keyof T[K1][K2][K3]
->(data: T, keys: [K1, K2, K3, K4]): T[K1][K2][K3][K4];
+>(data: T, keys: [K1, K2, K3, K4], defaultValue): T[K1][K2][K3][K4];
 export function safeGet<
   T,
   K1 extends keyof T,
@@ -354,7 +288,7 @@ export function safeGet<
   K3 extends keyof T[K1][K2],
   K4 extends keyof T[K1][K2][K3],
   K5 extends keyof T[K1][K2][K3][K4]
->(data: T, keys: [K1, K2, K3, K4, K5]): T[K1][K2][K3][K4][K5];
+>(data: T, keys: [K1, K2, K3, K4, K5], defaultValue): T[K1][K2][K3][K4][K5];
 export function safeGet<
   T,
   K1 extends keyof T,
@@ -363,9 +297,9 @@ export function safeGet<
   K4 extends keyof T[K1][K2][K3],
   K5 extends keyof T[K1][K2][K3][K4],
   K6 extends keyof T[K1][K2][K3][K4][K5]
->(data: T, keys: [K1, K2, K3, K4, K5, K6]): T[K1][K2][K3][K4][K5][K6];
-export function safeGet<T>(data: T, keys: any[]) {
+>(data: T, keys: [K1, K2, K3, K4, K5, K6], defaultValue): T[K1][K2][K3][K4][K5][K6];
+export function safeGet<T>(data: T, keys: any[], defaultValue) {
   return keys.reduce((obj, key) => {
-    return get(obj, key);
+    return get(obj, key, defaultValue);
   }, data);
 }

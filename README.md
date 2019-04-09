@@ -156,10 +156,7 @@ class State {
 The snippets in IDE extension [toolkits](https://github.com/nefe/vscode-toolkits) will generate all the redux code for you.
 
 ```js
-function reducer(
-  state = new InitialState(),
-  action: ActionType<typeof actions>
-): InitialState {
+function reducer(state = new InitialState(), action: ActionType<typeof actions>): InitialState {
   switch (action.type) {
     case Types.addNum: {
       const num = action.payload;
@@ -249,7 +246,6 @@ export type RootState = ReturnState<typeof rootReducers>;
 
 note: if it's not worked, check your Redux version! The old version Redux code define a totally wrong `combineReducer` type.
 
-
 ## safeGet
 
 the same as lodash get but type safe.
@@ -257,17 +253,19 @@ the same as lodash get but type safe.
 ```js
 const deepObj = {
   obj: {
-    arr: [{
-      num: 3
-    }]
+    arr: [
+      {
+        num: 3
+      }
+    ]
   },
   obj2: {
     str: ''
   }
-}
+};
 
 // get data path is type safe
-const num = safeGet(deepObj, ['obj', 'arr', 0, 'num']);
+const num = safeGet(deepObj, ['obj', 'arr', 0, 'num'], defaultValueHere);
 const str = safeGet(deepObj, ['obj2', 'str']);
 // return type is type safe
 ```
