@@ -13,7 +13,7 @@ const ERROR_SUFFIX = '_ERROR';
 declare let Proxy: any;
 
 /** 创建 Types */
-export function composeTypes<T1, T2>(config: { prefix: string; BasicTypes: T1; FetchTypes: T2 }): B<T1> & F<T2> {
+export function composeTypes<T1, T2>(config: { prefix: string; BasicTypes: T1; FetchTypes?: T2 }): B<T1> & F<T2> {
   const { prefix, BasicTypes: actionTypes = {}, FetchTypes: fetchActionTypes = {} } = config;
 
   const types = { ...(actionTypes as any), ...(fetchActionTypes as any) };
@@ -21,35 +21,37 @@ export function composeTypes<T1, T2>(config: { prefix: string; BasicTypes: T1; F
 
   const res = {} as any;
 
-  Object.keys(types).forEach(property => {
-    if (fetchActionTypes.hasOwnProperty(property)) {
-      let result = [] as any;
+  if (fetchActionTypes) {
+    Object.keys(types).forEach(property => {
+      if (fetchActionTypes.hasOwnProperty(property)) {
+        let result = [] as any;
 
-      if (fetchActionTypes[property] === NO_ERROR_TYPES) {
-        result = [prefix + property + LOADING_SUFFIX, prefix + property + SUCCESS_SUFFIX, null];
+        if (fetchActionTypes[property] === NO_ERROR_TYPES) {
+          result = [prefix + property + LOADING_SUFFIX, prefix + property + SUCCESS_SUFFIX, null];
+          result.loading = result[0];
+          result.success = result[1];
+
+          res[property] = result;
+          return;
+        }
+
+        result = [
+          prefix + property + LOADING_SUFFIX,
+          prefix + property + SUCCESS_SUFFIX,
+          prefix + property + ERROR_SUFFIX
+        ];
+
         result.loading = result[0];
         result.success = result[1];
+        result.error = result[2];
 
         res[property] = result;
         return;
       }
 
-      result = [
-        prefix + property + LOADING_SUFFIX,
-        prefix + property + SUCCESS_SUFFIX,
-        prefix + property + ERROR_SUFFIX
-      ];
-
-      result.loading = result[0];
-      result.success = result[1];
-      result.error = result[2];
-
-      res[property] = result;
-      return;
-    }
-
-    res[property] = prefix + property;
-  });
+      res[property] = prefix + property;
+    });
+  }
 
   return res;
 }
