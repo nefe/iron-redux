@@ -9,7 +9,7 @@
 
 ## features
 
-- iron-redux provides helper functions to create type-safe redux types, redux actions and redux state without any extra type difinitions power by the type infer ability of typescript. Try the [example code](https://github.com/nefe/iron-redux/blob/master/examples/redux.tsx) in vscode.
+- iron-redux provides helper functions to create type-safe redux types, redux actions and redux state without any extra type difinitions power by the type infer ability of typescript. Try the [example code](https://github.com/nefe/iron-redux/blob/master/examples/redux.ts) in vscode.
 - The type of store (The state of your whole application) will be inferred by `ReturnState<your root reducer map>` in iron-redux.
 - Every action type case in reducer can get different corresponding payload type.
 - vscode IDE [extension](https://github.com/nefe/vscode-toolkits) support.
@@ -97,6 +97,20 @@ const actions = {
 
 console.log(actions.changeId({ id: 3, pre: '_' }));
 // { type: 'test/changeId', paylaod: '_3' }
+```
+
+You can specify the property name in State in createAction , and the property will be updated by default logic in handleAll of Reducer！
+
+```js
+const actions = {
+  changeId: createAction(Types.changeId, 'id')<number>(),
+};
+
+class InitialState {
+  id = 3;
+}
+
+// then u don't need to handle this action in reducer
 ```
 
 Also, if you don't like createAction, you can define action creator by yourself. But remember don't forget to define the arguments type!
