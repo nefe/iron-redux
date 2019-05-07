@@ -70,9 +70,16 @@ const identify = arg => arg;
  */
 export function createAction<T>(type: T, stateKey = '') {
   return <P, R = P>(fn: (params?: P, ...args: any[]) => R = identify) => (params?: P, ...args: any[]) => {
+    if (stateKey) {
+      return {
+        type,
+        stateKey,
+        payload: fn(params, ...args)
+      };
+    }
+
     return {
       type,
-      stateKey,
       payload: fn(params, ...args)
     };
   };
