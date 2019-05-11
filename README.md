@@ -86,7 +86,7 @@ const actions = {
 console.log(actions.changeId(3));  // { type: 'test/chagneId', payload: 3 };
 ```
 
-if the action creator arguments and payload is not equal, you car define a custom arguments => payload transfer function. Both the argument and the return action object are type-safe, the return action object type will be inferred.
+if the action creator arguments and payload is not equal, you can define a custom arguments => payload transfer function. Both the argument and the return action object are type-safe, the return action object type will be inferred.
 
 ```js
 const actions = {

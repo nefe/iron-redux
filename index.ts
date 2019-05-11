@@ -117,9 +117,9 @@ export function createFetchAction<Key>(types: IFetchTypes<Key>, url: string, met
 }
 
 /** 根据 Reducer Map 返回 全局 State */
-export type ReturnState<ReducerMap> = {
-  [key in keyof ReducerMap]: ReducerMap[key] extends (state: any, action: any) => infer R ? R : any
-};
+export type ReturnState<
+  ReducerMap extends { [key: string]: (state: any, action: any) => any }
+> = { [key in keyof ReducerMap]: ReturnType<ReducerMap[key]> };
 
 type ValueOf<T> = T[keyof T];
 
@@ -127,8 +127,10 @@ type ValueOf<T> = T[keyof T];
  *
  * 获取 action 类型
  */
-export type ActionType<Actions> =
-  | ValueOf<{ [key in keyof Actions]: Actions[key] extends (...args: any[]) => infer R ? R : never }>
+export type ActionType<
+  Actions extends { [key: string]: (...args: any[]) => any }
+> =
+  | ValueOf<{ [key in keyof Actions]: ReturnType<Actions[key]> }>
   | {
       type: 'error';
       payload?: { message: string; [key: string]: any };
