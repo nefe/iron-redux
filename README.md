@@ -199,7 +199,7 @@ class InitialState {
 }
 ```
 
-And there are some static method like `AsyncTuple.handleLoading`, `AsyncTuple.handleLoading`, `AsyncTuple.handleLoading` which will process the API fetch logic for you.
+And there are some static method like `AsyncTuple.handleLoading`, `AsyncTuple.handleError`, `AsyncTuple.handleSuccess` which will process the API fetch logic for you.
 
 ```
 case Types.loadData.loading: {
