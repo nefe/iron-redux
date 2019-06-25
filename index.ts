@@ -129,6 +129,7 @@ type ValueOf<T> = T[keyof T];
  */
 export type ActionType<Actions> =
   | ValueOf<{ [key in keyof Actions]: Actions[key] extends (...args: any[]) => infer R ? R : never }>
+  | ValueOf<{ [key in keyof Actions]: Actions[key] extends (arg: never, ...args: any[]) => infer R ? R : never }>
   | {
       type: 'error';
       payload?: { message: string; [key: string]: any };
