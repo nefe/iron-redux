@@ -1,3 +1,8 @@
+0.2.4 / 2019-06-25
+==================
+
+* fix: fix bad never type inference under `--strictFunctionTypes`
+
 0.2.3 / 2019-05-07
 ==================
 
