@@ -16,8 +16,7 @@
   "license": "MIT",
   "files": [
     "*.md",
-    "lib",
-    "index.ts"
+    "lib"
   ],
   "devDependencies": {
     "@types/redux": "^3.6.0",
