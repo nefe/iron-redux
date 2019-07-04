@@ -1,6 +1,6 @@
 {
   "name": "iron-redux",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "redux typescript perfect safe",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
