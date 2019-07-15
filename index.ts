@@ -271,16 +271,16 @@ export class AsyncTuple<T> {
   }
 }
 
-export function safeGet<T, K1 extends keyof T>(data: T, keys: [K1], defaultValue): T[K1];
+export function safeGet<T, K1 extends keyof T>(data: T, keys: [K1], defaultValue?): T[K1];
 export function safeGet<T, K1 extends keyof T, K2 extends keyof T[K1]>(
   data: T,
   keys: [K1, K2],
-  defaultValue
+  defaultValue?
 ): T[K1][K2];
 export function safeGet<T, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2]>(
   data: T,
   keys: [K1, K2, K3],
-  defaultValue
+  defaultValue?
 ): T[K1][K2][K3];
 export function safeGet<
   T,
@@ -288,7 +288,7 @@ export function safeGet<
   K2 extends keyof T[K1],
   K3 extends keyof T[K1][K2],
   K4 extends keyof T[K1][K2][K3]
->(data: T, keys: [K1, K2, K3, K4], defaultValue): T[K1][K2][K3][K4];
+>(data: T, keys: [K1, K2, K3, K4], defaultValue?): T[K1][K2][K3][K4];
 export function safeGet<
   T,
   K1 extends keyof T,
@@ -296,7 +296,7 @@ export function safeGet<
   K3 extends keyof T[K1][K2],
   K4 extends keyof T[K1][K2][K3],
   K5 extends keyof T[K1][K2][K3][K4]
->(data: T, keys: [K1, K2, K3, K4, K5], defaultValue): T[K1][K2][K3][K4][K5];
+>(data: T, keys: [K1, K2, K3, K4, K5], defaultValue?): T[K1][K2][K3][K4][K5];
 export function safeGet<
   T,
   K1 extends keyof T,
@@ -305,8 +305,8 @@ export function safeGet<
   K4 extends keyof T[K1][K2][K3],
   K5 extends keyof T[K1][K2][K3][K4],
   K6 extends keyof T[K1][K2][K3][K4][K5]
->(data: T, keys: [K1, K2, K3, K4, K5, K6], defaultValue): T[K1][K2][K3][K4][K5][K6];
-export function safeGet<T>(data: T, keys: any[], defaultValue) {
+>(data: T, keys: [K1, K2, K3, K4, K5, K6], defaultValue?): T[K1][K2][K3][K4][K5][K6];
+export function safeGet<T>(data: T, keys: any[], defaultValue?) {
   return keys.reduce((obj, key) => {
     return get(obj, key, defaultValue);
   }, data);
