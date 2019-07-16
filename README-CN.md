@@ -7,6 +7,16 @@
 [![npm downloads](https://img.shields.io/npm/dt/iron-redux.svg?style=flat-square)](https://www.npmjs.com/package/iron-redux)
 [![Gitter](https://badges.gitter.im/nefe/iron-redux.svg)](https://gitter.im/nefe/iron-redux?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
+## 特性
+
+- iron-redux 提供了有效的方法来创建类型安全的 redux 类型，巧妙利用 Typescript 的类型推导能力，不需要额外定义任何类型，可以使 redux 整体流程类型完美。
+- 让 Redux 代码极其精简！去除任何冗余的、形式化的代码！参看 [example](https://github.com/nefe/iron-redux/blob/master/examples/redux.tsx)。
+- `ReturnState<your root reducer map>`自动推导出整个项目的 Redux 全局状态树的类型。
+- 让 reducer 每个 case 都能获取不同的 action 类型，可在 vscode 中参看 [example](https://github.com/nefe/iron-redux/blob/master/examples/redux.tsx)；
+- vscode IDE [插件](https://github.com/nefe/vscode-toolkits)支持。
+- 非常轻量级！源码只有 300 行！零依赖！
+- iron-redux 不仅仅是一个库，同样也是使用 Typescript 编写 Redux 代码的最佳实践，有些规则你必须严格遵守。
+
 ## 安装
 
 npm:
@@ -21,22 +31,15 @@ yarn:
 yarn add iron-redux
 ```
 
-## 特性
+## 使用方法
 
-- 巧妙利用 Typescript 的类型推导能力，不需要额外定义任何类型，可以使 redux 整体流程类型完美。
-- 让 Redux 代码极其精简！去除任何冗余的、形式化的代码！参看 [example](https://github.com/nefe/iron-redux/blob/master/examples/redux.tsx)。
-- 自动推导出整个项目的 Redux 全局状态树的类型。
-- 让 reducer 每个 case 都能获取不同的 action 类型，可在 vscode 中参看 [example](https://github.com/nefe/iron-redux/blob/master/examples/redux.tsx)；
-- vscode IDE [插件](https://github.com/nefe/vscode-toolkits)支持。
-- 非常轻量级！源码只有 300 行！零依赖！
+## 1. action types
 
-# 使用文档
+在 iron-redux 中有两种 action 类型：`FetchTypes` 与 `BasicTypes`。
 
-## 1、action type
+在 enum 中添加一个类型名称就足以定义动作类型:
 
-简单的 action type 可以增加至 enum BasicTypes。复杂的 action type 可以增加到 enum FetchTypes。所有的 action type 可以在 Types 中获取：
-
-```typescript
+```js
 enum BasicTypes {
   changeId
 }
@@ -58,109 +61,136 @@ const Types = composeTypes({
 // Types.fetchId.error === 'test/changeId_ERROR';
 ```
 
-## 2、actionCreators
+## 2. action types
 
-### 简单的 actionCreator
+iron-redux 提供了两种创建 actions 的方法：`createAction`和`createFetchAction`。
 
-增加简单的 actionCreator，可以调用 createAction(actionType)<payload 类型>(payload 转换函数)
+### createAction
 
-```typescript
+提供 payload 类型，当它等于 actionCreator 的参数类型时：
+
+```js
 const actions = {
   changeId: createAction(Types.changeId)<number>()
 };
 
-// 调用
-// actions.changeId(3);  返回： { type: 'test/chagneId', payload: 3 };
+console.log(actions.changeId(3));  // { type: 'test/chagneId', payload: 3 };
 ```
 
-### createAction 也可以传入 payload 转换函数
+当 actionCreator 的参数类型与 payload 类型不相等时，你可以自定义 payload 转换函数。此时参数和返回操作对象都是类型安全的，返回操作对象类型会被自动推断。
 
-```
+```js
 const actions = {
-  changeId: createAction(Types.changeId)((id: number) => {
-    return {
-      id,
-    };
-  }),
+  changeId: createAction(Types.changeId)((arg: { id: number, pre: string }) => {
+    return arg.pre + arg.id;
+  })
 };
 
-// 调用
-// action.changeId(3); 返回： { type: 'test/changeId', payload: { id: 3} }
+console.log(actions.changeId({ id: 3, pre: '_' }));
+// { type: 'test/changeId', paylaod: '_3' }
 ```
 
-当然你也可以不用 createAction，自己手写 action。但是记得一定要完善类型不要使用 any。如：
+你也可以在 createAction 里指定 state 的属性名，reducer 中提供一个默认的 handleAll 函数，会自动帮你处理 action。
 
-```
+```js
 const actions = {
-    changeId(id: number) {
-      return { type: Types.changeId, payload: id };
-    },
+  changeId: createAction(Types.changeId, 'id')<number>(),
+};
+
+class InitialState {
+  id = 3;
+}
+
+// 这样你不需要在reducer中再来处理这个action
+```
+
+当然，如果你不喜欢用 createAction，也可以手写 action。但是记得一定要完善类型不要使用 any
+
+```js
+const actions = {
+  changeId(id: number) {
+    return { type: Types.changeId, payload: id };
+  }
 };
 ```
 
-### thunkAction
+### createFetchAction
 
-thunkAction 的返回类型请使用 ThunkAction 来声明。dispatch 已经拥有类型。getState 请使用已经定义好的 GetState 类型。
+背景：`FetchMiddleware`在 redux 中时非常常见的，如下所示：
 
-```typescript
-const actions = {
-  putUdf: some action,
-  updateFunc(params: Params): ThunkAction {
-    return async (dispatch, getState: GetState) => {
-      // 此处可以拿到 result 的类型为 putUdf 这个接口的返回类型
-      const result = await dispatch(actions.putUdf(params));
-    };
-  },
+```js
+{
+  types: [loadingType, successType, failureType],
+  url: '/api/data',
+  method: 'GET',
+
 }
 ```
 
-ThunkAction 返回 Promise：
+`FetchMiddleware`同样会根据 API 的返回结果自动处理 loading、success、failure 等 action。
 
-```typescript
+使用如下：
+
+```js
 const actions = {
-  updateFunc(params: Params): ThunkAction<Response> {
-    return async (dispatch, getState: GetState) => {
-      // 此处可以拿到 result 的类型为 putUdf 这个接口的返回类型
-      const result = await dispatch(actions.putUdf(params));
-
-      // const state = getState();
-      // 返回这个Promise，供view中使用
-      return dispatch(actions.loadDetailFuncInfo(params.udfId));
-    };
-  }
+  fetchData: createFetchAction(Types.fetchData, '/api/data', Method.Get)<Params, Response>(),
 };
-
-// view 中
-this.props.updateFunc.then(data => {});
 ```
 
-## 3、InitialState
+友情提示: 如果你在使用 [pont](https://github.com/nefe/pont)，那么所有的 fetch action 都将会自动生存。
 
-- 1、复杂的属性可以尽量写些注释，方便调用的时候可以辨识。
-- 2、接口返回类型如果要处理 loading、error。请使用 AsyncTuple。使用 API 中的 init 一方面提供了类型，一方面提供了接口的初始值，该初始值可以防止复杂对象后端返回 undefined
-- 3、InitialState 里不要有各种 loading、error 字段，代码阅读者无法区分这是哪个请求的 loading 或者 error。建议都使用 AsyncTuple 来做。
+## 3、initial state
+
+- 1、复杂的属性可以尽量写些注释，方便调用的时候可以辨识
+- 2、使用 `AsyncTuple` 来管理异步获取的数据. InitialState 里不要有各种 loading、error 字段
+- 3、将 initial state 命名为 `State`，这样可以同时产生 state 的初始值以及 state 的类型定义。
 
 ```typescript
-class InitialState {
+class State {
+  /** comment the property here */
   isDialogVisible = false;
   detailFuncInfo = new AsyncTuple(API.ideFunction.getDetailById.init);
   id = 0;
 }
 ```
 
-## 4、AsyncTuple
+## 4、reducer
 
-存储某个数据及其 loading error 状态的类。包含静态方法 `handleLoading`, `handleError`, `handleSuccess`。
+[toolkits](https://github.com/nefe/vscode-toolkits) VSCode 插件会帮助你生成以上所有的 snippets 代码
 
+```js
+function reducer(state = new InitialState(), action: ActionType<typeof actions>): InitialState {
+  switch (action.type) {
+    case Types.addNum: {
+      const num = action.payload;
+
+      return {
+        ...state,
+        num
+      };
+    }
+    default: {
+      return AsyncTuple.handleAll(prefix, state, action);
+    }
+  }
+}
 ```
+
+友情提示：在每一种 case 中，你都可以针对不同的常见尝试不同的 payload 类型。
+
+## 5、AsyncTuple
+
+`AsyncTuple` 会帮助你管理所有的 loading，error，message，data 等类型数据。
+
+```js
 class InitialState {
   data = new AsyncTuple(someResponse);
 }
 ```
 
-使用静态方法
+同时`AsyncTuple`提供了 `AsyncTuple.handleLoading`, `AsyncTuple.handleError`, `AsyncTuple.handleSuccess`等静态方法，帮助你处理 API 请求过程中的不同逻辑。
 
-```
+```js
 case Types.loadData.loading: {
   return AsyncTuple.handleLoading("data", state);
 }
@@ -172,44 +202,16 @@ case Types.loadData.error: {
 }
 ```
 
-使用数据：
+`AsyncTuple` 提供了一个强大的方法 `handleAll`来帮助你处理所有的 API 请求逻辑。但前提是你必须使用`AsyncTuple` 初始化你的 state。
 
-```
-const state: InitialState;
-
-state.data.loading
-stata.data.data
-state.data.error
-```
-
-## 5、reducer
-
-reducer 没有什么好说的。根据自己的需求写就好了。AsyncTuple 的 case 可以使用如下方法调用。
-
-```typescript
-    case Types.loadUdfFuncInfo.loading: {
-      return AsyncTuple.handleLoading("udfFuncInfo", state);
-    }
-    case Types.loadUdfFuncInfo.success: {
-      return AsyncTuple.handleSuccess("udfFuncInfo", state, action);
-    }
-    case Types.loadUdfFuncInfo.error: {
-      return AsyncTuple.handleError("udfFuncInfo", state, action);
-    }
-```
-
-## 6、handleAll
-
-为了避免在 reducer 的各种 case 中处理冗余而啰嗦的 AsyncTuple 逻辑（包括 handleError、handleLoading、handleSuccess）。可以在 default 中使用 handleAll 方法。
-
-```
+```js
 const actions = {
-  // 注意在action处要指定字段名： listData
-  fetch: ApI.xx.xx.createFetchAction(Types.fetch, 'listData'),
+  // define state field
+  fetchData: createFetchAction(Types.fetchData, '/api/data', Method.Get)<Params, Response>('listData'),
 };
 
 class InitialState {
-  // 注意该对应字段默认应该是 AsyncTuple。
+  // using AsyncTuple
   listData = new AsyncTuple();
 }
 
@@ -221,7 +223,7 @@ function reducer(
   action: ActionType<typeof actions>
 ): InitialState {
   switch (action.type) {
-    // 这里可以避免写各种 AsyncTuple。
+    // you don't need write any API fetch logic here!
     default: {
       return AsyncTuple.handleAll(prefix, state, action);
     }
@@ -229,104 +231,42 @@ function reducer(
 }
 ```
 
-其中 AsyncTuple.handleAll 是可以由用户来自定义的：
+## 获取 redux 全局状态类型
 
-```
-// 自定义处理函数
-function process<K extends keyof T, T extends Object>(
-    stateKey: K,
-    state: T,
-    action,
-    fetchType: "loading" | "success" | "error"
-  ): T {
-    if (fetchType === "loading") {
-      return AsyncTuple.handleLoading(stateKey, state);
-    } else if (fetchType === "success") {
-      return AsyncTuple.handleSuccess(stateKey, state, action);
-    } else if (fetchType === "error") {
-      return AsyncTuple.handleError(stateKey, state, action);
-    }
+项目中所有的 reducers 文件都会有一个根 reducer 文件。iron-redux 提供了一个自动推断类型的接口`ReturnState`，它会自动推导出整个项目的 Redux 全局状态树的类型。
 
-    return state;
-}
-
-/**
- * reducer
- */
-function reducer(
-  state = new InitialState(),
-  action: ActionType<typeof actions>
-): InitialState {
-  switch (action.type) {
-    // 这里可以避免写各种 AsyncTuple。
-    default: {
-        AsyncTuple.handleAll(prefix, state, action, process)
-    }
-  }
-}
-```
-
-## 衍生数据
-
-如果，mapStateToProps 进行数据加工，则会产生一些衍生数据。衍生数据类型可以用如下方法产生：
-
-```
-function mapStateToProps(state: GlobalState, props: Props) {
-  return ...;
-}
-
-type ReactProps = ReturnType<typeof mapStateToProps> & Props & typeof actions;
-```
-
-## 获取 Redux 全局 State 类型
-
-```
+```js
 const rootReducers = {
   a: AReducer,
-  b: BReducer,
+  b: BReducer
 };
 const rootReducer = combineReducer(rootReducers);
 
 export type RootState = ReturnState<typeof rootReducers>;
 ```
 
-# 工具
+友情提示：如果该方法不生效，请检查你的 redux 版本。老的 redux 版本会出现一个`combineReducer`类型错误。
 
-vscode IDE 可以安装 nelfe-toolkits。
+## safeGet
 
-- 1、支持 redux 文件的 snippets
-- 2、可以按 cmd + ctrl + a，然后根据提示创建 action。
-- 3、持续添加中...
+与 lodash.get 方法一样，但类型完美。
 
-# 建议
-
-除了用 handleAll 来避免异步 action 的冗余代码，简单的 action 也可以用如下方式避免冗余代码：
-
-```typescript
-const actions = {
-  // 同时传入 key 和 value。
-  setConfig<Key extends keyof Config>(key: Key, value: Config[Key]) {
-    return {
-      type: Types.setConfig,
-      payload: {
-        key,
-        value
+```js
+const deepObj = {
+  obj: {
+    arr: [
+      {
+        num: 3
       }
-    };
+    ]
   },
+  obj2: {
+    str: ''
+  }
 };
 
-reducer:
-    case Types.setConfig: {
-      const { payload } = action;
-
-      return {
-        ...state,
-        config: {
-          ...state.config,
-          [payload.key]: payload.value
-        }
-      };
-    }
-
+// get data path is type safe
+const num = safeGet(deepObj, ['obj', 'arr', 0, 'num'], defaultValueHere);
+const str = safeGet(deepObj, ['obj2', 'str']);
+// return type is type safe
 ```
