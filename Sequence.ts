@@ -13,7 +13,7 @@ export default class Sequence {
 
   prefix: string;
 
-  createSequenceAction = (callback) => {
+  createSequenceAction = (callback): any => {
     return (...seqArgs) => (dispatch, getState) => {
       const proxy = new Proxy(this, {
         get(target, prop) {

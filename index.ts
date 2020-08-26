@@ -168,17 +168,16 @@ export class AsyncTuple<T> {
 
   [x: string]: any;
 
-  constructor(initLoading?: boolean | T, initData?: T) {
-    if (typeof initLoading === 'boolean') {
-      this.loading = initLoading;
-    }
-
-    if (typeof initLoading === 'object') {
-      this.data = initLoading;
-    }
-
-    if (typeof initData === 'object') {
+  constructor(initData: T)
+  constructor(initLoading: boolean, initData: T) 
+  constructor(initLoading?, initData?) {
+    if (initData != null) {
       this.data = initData;
+      this.loading = !!initLoading;
+    } if (typeof initLoading === 'boolean') {
+      this.loading = initLoading;
+    } else {
+      this.data = initLoading;
     }
   }
 
