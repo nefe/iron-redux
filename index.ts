@@ -1,5 +1,7 @@
 import * as get from 'lodash.get';
 
+export { default as Sequence } from './Sequence';
+
 /** fetch 中间件的 types */
 type F<T> = { [key in keyof T]: { success: key; error: 'error'; loading: 'loading' } };
 type B<T> = { [key in keyof T]: key };
